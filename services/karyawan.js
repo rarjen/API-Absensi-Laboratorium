@@ -84,18 +84,18 @@ const editKaryawan = async (req) => {
     throw new BadRequestError(`Tidak ada karyawan dengan id: ${id_karyawan}`);
   }
 
-  const checkDuplicate = await Karyawan.findOne({
-    where: {
-      [Op.or]: [
-        { email: { [Op.like]: email } },
-        { nomer_karyawan: { [Op.like]: nomer_karyawan } },
-        { nomer_telepon: { [Op.like]: nomer_telepon } },
-        { nomer_rekening: { [Op.like]: nomer_rekening } },
-      ],
-    },
-  });
+  // const checkDuplicate = await Karyawan.findOne({
+  //   where: {
+  //     [Op.or]: [
+  //       { email: { [Op.like]: email } },
+  //       { nomer_karyawan: { [Op.like]: nomer_karyawan } },
+  //       { nomer_telepon: { [Op.like]: nomer_telepon } },
+  //       { nomer_rekening: { [Op.like]: nomer_rekening } },
+  //     ],
+  //   },
+  // });
 
-  if (checkDuplicate) throw new BadRequestError("Duplikasi Data!");
+  // if (checkDuplicate) throw new BadRequestError("Duplikasi Data!");
 
   const result = await Karyawan.update(
     {
@@ -127,4 +127,43 @@ const showAllKaryawan = async () => {
   return result;
 };
 
-module.exports = { createKaryawan, editKaryawan, showAllKaryawan };
+const getKaryawan = async (req) => {
+  const { id_karyawan } = req.params;
+  const result = await Karyawan.findOne({
+    where: { id: id_karyawan },
+    include: [
+      {
+        model: Jabatan,
+        as: "jabatan",
+      },
+    ],
+  });
+
+  if (!result) {
+    throw new BadRequestError(`Tidak ada karyawan dengan id: ${id_karyawan}`);
+  }
+
+  return result;
+};
+
+const destroyKaryawan = async (req) => {
+  const { id_karyawan } = req.params;
+
+  const karyawanExist = await Karyawan.findOne({ where: { id: id_karyawan } });
+
+  if (!karyawanExist) {
+    throw new BadRequestError(`Tidak ada karyawan dengan id: ${id_karyawan}`);
+  }
+
+  const result = await Karyawan.destroy({ where: { id: id_karyawan } });
+
+  return result;
+};
+
+module.exports = {
+  createKaryawan,
+  editKaryawan,
+  showAllKaryawan,
+  getKaryawan,
+  destroyKaryawan,
+};
