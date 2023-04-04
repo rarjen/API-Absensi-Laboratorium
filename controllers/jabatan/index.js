@@ -3,6 +3,7 @@ const {
   editJabatan,
   showAllJabatan,
   destroyJabatan,
+  getJabatan,
 } = require("../../services/jabatan");
 const { StatusCodes } = require("http-status-codes");
 
@@ -55,6 +56,20 @@ const update = async (req, res, next) => {
   }
 };
 
+const show = async (req, res, next) => {
+  try {
+    const result = await getJabatan(req);
+
+    return res.status(StatusCodes.OK).json({
+      status: true,
+      message: "Success get jabatan!",
+      data: result,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 const destroy = async (req, res, next) => {
   try {
     const result = await destroyJabatan(req);
@@ -69,4 +84,4 @@ const destroy = async (req, res, next) => {
   }
 };
 
-module.exports = { create, update, index, destroy };
+module.exports = { create, update, index, destroy, show };
