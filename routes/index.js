@@ -1,4 +1,5 @@
 const router = require("express").Router();
+const auth = require("./auth");
 const karyawan = require("./karyawan");
 const role = require("./jabatan");
 
@@ -10,6 +11,7 @@ router.get("/", (req, res) => {
   });
 });
 
+router.use("/auth", auth);
 router.use("/karyawan", karyawan);
 router.use("/role", role);
 
