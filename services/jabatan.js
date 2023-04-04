@@ -21,7 +21,7 @@ const editJabatan = async (req) => {
 
   const jabatanExist = await Jabatan.findOne({ where: { id: id_jabatan } });
 
-  if (jabatanExist) {
+  if (!jabatanExist) {
     throw new BadRequestError(`Tidak ada jabatan dengan id: ${id_jabatan}`);
   }
 
