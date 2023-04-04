@@ -2,6 +2,8 @@ const {
   createKaryawan,
   editKaryawan,
   showAllKaryawan,
+  destroyKaryawan,
+  getKaryawan,
 } = require("../../services/karyawan");
 const { StatusCodes } = require("http-status-codes");
 
@@ -19,6 +21,20 @@ const index = async (req, res, next) => {
     return res.status(StatusCodes.OK).json({
       status: true,
       message: "Success menampilkan semua karyawan",
+      data: result,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const show = async (req, res, next) => {
+  try {
+    const result = await getKaryawan(req);
+
+    return res.status(StatusCodes.OK).json({
+      status: true,
+      message: "Success menampilkan karyawan",
       data: result,
     });
   } catch (error) {
@@ -54,6 +70,18 @@ const update = async (req, res, next) => {
   }
 };
 
-// const destroy = async
+const destroy = async (req, res, next) => {
+  try {
+    const result = await destroyKaryawan(req);
 
-module.exports = { create, update, index };
+    return res.status(StatusCodes.OK).json({
+      status: true,
+      message: "Success delete karyawan!",
+      data: result,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+module.exports = { create, update, index, show, destroy };
