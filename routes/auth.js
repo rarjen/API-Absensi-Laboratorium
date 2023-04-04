@@ -1,5 +1,4 @@
 const router = require("express").Router();
-const authorize = require("../middlewares/authorize");
 const auth = require("../controllers/auth");
 
 router.post("/register", auth.registerAccount);
