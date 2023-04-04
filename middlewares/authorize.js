@@ -1,4 +1,5 @@
 const jwt = require("jsonwebtoken");
+const { UnauthorizedError } = require("../errors");
 
 function authorize(roles = []) {
   if (typeof roles === "string") {
@@ -11,11 +12,7 @@ function authorize(roles = []) {
         const token = req.headers["authorization"].split(" ")[1];
 
         if (!token) {
-          return res.status(401).json({
-            status: false,
-            message: "you're not authorized!",
-            data: null,
-          });
+          throw new UnauthorizedError("You're not authorized");
         }
 
         const user = jwt.verify(token, process.env.JWT_SECRET_KEY);
@@ -24,11 +21,7 @@ function authorize(roles = []) {
           const valid = roles.find((r) => r == user.role);
 
           if (!valid) {
-            return res.status(401).json({
-              status: false,
-              message: "you're not authorized!",
-              data: null,
-            });
+            throw new UnauthorizedError("You're not authorized");
           }
         }
 
@@ -36,11 +29,7 @@ function authorize(roles = []) {
         next();
       } catch (err) {
         if (err.message == "jwt malformed") {
-          return res.status(401).json({
-            status: false,
-            message: "you're not authorized!",
-            data: null,
-          });
+          throw new UnauthorizedError("You're not authorized");
         }
         next(err);
       }
