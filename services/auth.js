@@ -1,6 +1,6 @@
 const { User } = require("../models");
 const { admin } = require("../utils/enum");
-const { BadRequestError, UnauthenticatedError } = require("../errors");
+const { BadRequestError } = require("../errors");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const Validator = require("fastest-validator");

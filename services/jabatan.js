@@ -1,5 +1,5 @@
 const { Jabatan } = require("../models");
-const { BadRequestError, UnauthenticatedError } = require("../errors");
+const { BadRequestError } = require("../errors");
 
 const createJabatan = async (req) => {
   const { jabatan } = req.body;
