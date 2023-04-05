@@ -1,6 +1,6 @@
-const { Karyawan, Jabatan } = require("../models");
+const { Karyawan, Jabatan, Avatar } = require("../models");
 const Validator = require("fastest-validator");
-const { BadRequestError, UnauthorizedError } = require("../errors");
+const { BadRequestError } = require("../errors");
 const { Op } = require("sequelize");
 const v = new Validator();
 
@@ -135,6 +135,10 @@ const getKaryawan = async (req) => {
       {
         model: Jabatan,
         as: "jabatan",
+      },
+      {
+        model: Avatar,
+        as: "avatar",
       },
     ],
   });
