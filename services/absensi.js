@@ -11,7 +11,7 @@ const postAbsen = async (req) => {
   } = req.body;
 
   const shiftPagi = "07:00";
-  const shiftSore = "14.00";
+  const shiftSore = "14:00";
 
   const getKaryawan = await Karyawan.findOne({ where: { id: id_karyawan } });
 
