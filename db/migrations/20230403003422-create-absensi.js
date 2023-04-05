@@ -13,10 +13,10 @@ module.exports = {
         type: Sequelize.INTEGER,
       },
       jam_masuk: {
-        type: Sequelize.TIME,
+        type: Sequelize.STRING,
       },
       jam_pulang: {
-        type: Sequelize.TIME,
+        type: Sequelize.STRING,
       },
       tipe: {
         type: Sequelize.STRING,
@@ -28,7 +28,7 @@ module.exports = {
         type: Sequelize.STRING,
       },
       tanggal: {
-        type: Sequelize.DATE,
+        type: Sequelize.STRING,
       },
       createdAt: {
         allowNull: false,
