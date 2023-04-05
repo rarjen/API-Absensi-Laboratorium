@@ -17,6 +17,11 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: "id_karyawan",
         as: "absensi",
       });
+
+      Karyawan.hasOne(models.Avatar, {
+        foreignKey: "id_karyawan",
+        as: "avatar",
+      });
     }
   }
   Karyawan.init(
@@ -28,7 +33,6 @@ module.exports = (sequelize, DataTypes) => {
       nomer_karyawan: DataTypes.STRING,
       nomer_telepon: DataTypes.STRING,
       nomer_rekening: DataTypes.STRING,
-      avatar: DataTypes.STRING,
     },
     {
       sequelize,
