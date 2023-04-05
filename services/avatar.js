@@ -11,8 +11,18 @@ const upload = async (req) => {
   if (!karyawanExist) {
     throw new BadRequestError(`Tidak ada karyawan dengan id ${id_karyawan}`);
   }
+  if (!req.file) {
+    const result = await Avatar.create({
+      id_karyawan,
+      url_image: DEFAULT_IMG,
+    });
+
+    return result;
+  }
 
   const file = req.file.buffer.toString("base64");
+
+  // console.log(file);
 
   const uploadedFile = await imagekit.upload({
     file,
