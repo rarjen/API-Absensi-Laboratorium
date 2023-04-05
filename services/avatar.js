@@ -1,9 +1,16 @@
-const { Avatar } = require("../models");
+const { Avatar, Karyawan } = require("../models");
 const imagekit = require("../utils/media/imagekit");
+const { BadRequestError } = require("../errors");
 const { DEFAULT_IMG } = process.env;
 
 const upload = async (req) => {
   const { id_karyawan } = req.body;
+
+  const karyawanExist = await Karyawan.findOne({ where: { id: id_karyawan } });
+
+  if (!karyawanExist) {
+    throw new BadRequestError(`Tidak ada karyawan dengan id ${id_karyawan}`);
+  }
 
   const file = req.file.buffer.toString("base64");
 
