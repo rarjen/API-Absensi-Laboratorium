@@ -1,5 +1,6 @@
 const { Absensi, Karyawan } = require("../models");
 const { BadRequestError } = require("../errors");
+const { Op } = require("sequelize");
 
 const postAbsen = async (req) => {
   let {
@@ -62,4 +63,26 @@ const postAbsen = async (req) => {
   return result;
 };
 
-module.exports = { postAbsen };
+const getAbsensi = async (req) => {
+  const { startDate, endDate } = req.query;
+
+  if (startDate && endDate) {
+    const result = await Absensi.findAll({
+      where: {
+        createdAt: {
+          [Op.between]: [
+            new Date(startDate).setHours(0, 0, 0),
+            new Date(endDate).setHours(23, 59, 59),
+          ],
+        },
+      },
+    });
+    return result;
+  }
+
+  const result = await Absensi.findAll({});
+
+  return result;
+};
+
+module.exports = { postAbsen, getAbsensi };
