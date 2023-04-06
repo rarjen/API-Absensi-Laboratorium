@@ -1,4 +1,4 @@
-const { postAbsen } = require("../../services/absensi");
+const { postAbsen, getAbsensi } = require("../../services/absensi");
 const { StatusCodes } = require("http-status-codes");
 
 const absen = async (req, res, next) => {
@@ -15,4 +15,18 @@ const absen = async (req, res, next) => {
   }
 };
 
-module.exports = { absen };
+const show = async (req, res, next) => {
+  try {
+    const result = await getAbsensi(req);
+
+    return res.status(StatusCodes.OK).json({
+      status: true,
+      message: "Success Get Data",
+      data: result,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+module.exports = { absen, show };
