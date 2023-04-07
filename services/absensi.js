@@ -21,7 +21,6 @@ const postAbsen = async (req) => {
   }
 
   const shiftKaryawan = getKaryawan.shift;
-  console.log(shiftKaryawan);
 
   if (tipe === "Pulang") {
     const result = await Absensi.update(
@@ -48,6 +47,18 @@ const postAbsen = async (req) => {
     status = "Tepat";
   } else {
     status = "Telat";
+  }
+
+  const checkAbsen = await Absensi.findOne({
+    where: {
+      id_karyawan,
+      jam_pulang: "-",
+      tanggal: timeDate.toLocaleDateString(),
+    },
+  });
+
+  if (checkAbsen) {
+    throw new BadRequestError("Anda sudah absen hari ini!");
   }
 
   const result = await Absensi.create({
