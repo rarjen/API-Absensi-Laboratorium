@@ -1,5 +1,5 @@
 const { Jabatan } = require("../models");
-const { BadRequestError, UnauthenticatedError } = require("../errors");
+const { BadRequestError } = require("../errors");
 
 const createJabatan = async (req) => {
   const { jabatan } = req.body;
@@ -21,7 +21,7 @@ const editJabatan = async (req) => {
 
   const jabatanExist = await Jabatan.findOne({ where: { id: id_jabatan } });
 
-  if (jabatanExist) {
+  if (!jabatanExist) {
     throw new BadRequestError(`Tidak ada jabatan dengan id: ${id_jabatan}`);
   }
 
@@ -41,6 +41,17 @@ const showAllJabatan = async (req) => {
   return result;
 };
 
+const getJabatan = async (req) => {
+  const { id_jabatan } = req.params;
+
+  const result = await Jabatan.findOne({ where: { id: id_jabatan } });
+  if (!result) {
+    throw new BadRequestError(`Tidak ada jabatan dengan id: ${id_jabatan}`);
+  }
+
+  return result;
+};
+
 const destroyJabatan = async (req) => {
   const { id_jabatan } = req.params;
 
@@ -55,4 +66,10 @@ const destroyJabatan = async (req) => {
   return result;
 };
 
-module.exports = { createJabatan, editJabatan, showAllJabatan, destroyJabatan };
+module.exports = {
+  createJabatan,
+  editJabatan,
+  showAllJabatan,
+  destroyJabatan,
+  getJabatan,
+};
