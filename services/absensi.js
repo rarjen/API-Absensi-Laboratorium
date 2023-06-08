@@ -3,21 +3,20 @@ const { BadRequestError } = require("../errors");
 const { Op } = require("sequelize");
 
 const postAbsen = async (req) => {
-  let {
-    id_karyawan,
+  const {
+    karyawan_id,
     timeDate = new Date(),
-    tipe,
+    status_absensi,
     status,
-    image_url = "-",
   } = req.body;
 
   const shiftPagi = "07:00";
   const shiftSore = "14:00";
 
-  const getKaryawan = await Karyawan.findOne({ where: { id: id_karyawan } });
+  const getKaryawan = await Karyawan.findOne({ where: { id: karyawan_id } });
 
   if (!getKaryawan) {
-    throw new BadRequestError(`Tidak ada karyawan dengan id: ${id_karyawan}`);
+    throw new BadRequestError(`Tidak ada karyawan dengan id: ${karyawan_id}`);
   }
 
   const shiftKaryawan = getKaryawan.shift;
@@ -28,7 +27,7 @@ const postAbsen = async (req) => {
         jam_pulang: timeDate.toLocaleTimeString(),
         tipe,
       },
-      { where: { id_karyawan, tanggal: timeDate.toLocaleDateString() } }
+      { where: { karyawan_id, tanggal: timeDate.toLocaleDateString() } }
     );
 
     if (result <= 0) {
@@ -51,7 +50,7 @@ const postAbsen = async (req) => {
 
   const checkAbsen = await Absensi.findOne({
     where: {
-      id_karyawan,
+      karyawan_id,
       jam_pulang: "-",
       tanggal: timeDate.toLocaleDateString(),
     },
@@ -62,7 +61,7 @@ const postAbsen = async (req) => {
   }
 
   const result = await Absensi.create({
-    id_karyawan,
+    karyawan_id,
     jam_masuk: timeDate.toLocaleTimeString(),
     jam_pulang: "-",
     tipe,
