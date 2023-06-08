@@ -1,8 +1,10 @@
 const router = require("express").Router();
 const absensi = require("../controllers/absensi");
 const authorize = require("../middlewares/authorize");
-const role = require("../utils/enum");
+const { ROLES } = require("../utils/enum");
 
-router.post("/post-absen", absensi.absen);
-router.get("/get-absen", authorize(role.admin), absensi.show);
+router.post("/postAbsen", absensi.absen);
+router.put("postAbsenPulang", absensi.absenPulang);
+router.get("/getTodayAbsen", absensi.absen);
+router.get("/getAbsen", authorize(ROLES.ADMIN), absensi.show);
 module.exports = router;
