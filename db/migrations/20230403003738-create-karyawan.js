@@ -9,16 +9,16 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER,
       },
-      id_jabatan: {
+      jabatan_id: {
+        type: Sequelize.INTEGER,
+      },
+      shift_id: {
         type: Sequelize.INTEGER,
       },
       full_name: {
         type: Sequelize.STRING,
       },
       email: {
-        type: Sequelize.STRING,
-      },
-      shift: {
         type: Sequelize.STRING,
       },
       nomer_karyawan: {

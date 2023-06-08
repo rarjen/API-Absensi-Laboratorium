@@ -9,27 +9,27 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       Karyawan.belongsTo(models.Jabatan, {
-        foreignKey: "id_jabatan",
+        foreignKey: "jabatan_id",
         as: "jabatan",
       });
 
       Karyawan.hasMany(models.Absensi, {
-        foreignKey: "id_karyawan",
+        foreignKey: "karyawan_id",
         as: "absensi",
       });
 
-      Karyawan.hasOne(models.Avatar, {
-        foreignKey: "id_karyawan",
-        as: "avatar",
+      Karyawan.belongsTo(models.Shift, {
+        foreignKey: "shift_id",
+        as: "shift",
       });
     }
   }
   Karyawan.init(
     {
-      id_jabatan: DataTypes.INTEGER,
+      jabatan_id: DataTypes.INTEGER,
+      shift_id: DataTypes.INTEGER,
       full_name: DataTypes.STRING,
       email: DataTypes.STRING,
-      shift: DataTypes.STRING,
       nomer_karyawan: DataTypes.STRING,
       nomer_telepon: DataTypes.STRING,
       nomer_rekening: DataTypes.STRING,
