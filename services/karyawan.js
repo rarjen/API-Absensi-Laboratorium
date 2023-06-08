@@ -1,4 +1,4 @@
-const { Karyawan, Jabatan, Avatar } = require("../models");
+const { Karyawan, Jabatan, Shift } = require("../models");
 const Validator = require("fastest-validator");
 const { BadRequestError } = require("../errors");
 const { Op } = require("sequelize");
@@ -6,14 +6,13 @@ const v = new Validator();
 
 const createKaryawan = async (req) => {
   const {
-    id_jabatan,
+    jabatan_id,
+    shift_id,
     full_name,
     email,
-    shift,
     nomer_karyawan,
     nomer_telepon,
     nomer_rekening,
-    avatar,
   } = req.body;
 
   const schema = {
@@ -30,10 +29,10 @@ const createKaryawan = async (req) => {
   const userExist = await Karyawan.findOne({
     where: {
       [Op.or]: [
-        { email: { [Op.like]: email } },
-        { nomer_karyawan: { [Op.like]: nomer_karyawan } },
-        { nomer_telepon: { [Op.like]: nomer_telepon } },
-        { nomer_rekening: { [Op.like]: nomer_rekening } },
+        { email },
+        { nomer_karyawan },
+        { nomer_telepon },
+        { nomer_rekening },
       ],
     },
   });
@@ -41,30 +40,28 @@ const createKaryawan = async (req) => {
   if (userExist) throw new BadRequestError("Duplikasi Data!");
 
   const result = await Karyawan.create({
-    id_jabatan,
+    jabatan_id,
+    shift_id,
     full_name,
     email,
-    shift,
     nomer_karyawan,
     nomer_telepon,
     nomer_rekening,
-    avatar,
   });
 
   return result;
 };
 
 const editKaryawan = async (req) => {
-  const { id_karyawan } = req.params;
+  const { karyawan_id } = req.params;
   const {
-    id_jabatan,
+    jabatan_id,
+    shift_id,
     full_name,
     email,
-    shift,
     nomer_karyawan,
     nomer_telepon,
     nomer_rekening,
-    avatar,
   } = req.body;
 
   const schema = {
@@ -78,37 +75,37 @@ const editKaryawan = async (req) => {
 
   if (validate.length > 0) throw new BadRequestError("Email tidak valid");
 
-  const karyawanExist = await Karyawan.findOne({ where: { id: id_karyawan } });
+  const karyawanExist = await Karyawan.findOne({ where: { id: karyawan_id } });
 
   if (!karyawanExist) {
-    throw new BadRequestError(`Tidak ada karyawan dengan id: ${id_karyawan}`);
+    throw new BadRequestError(`Tidak ada karyawan dengan id: ${karyawan_id}`);
   }
 
-  // const checkDuplicate = await Karyawan.findOne({
-  //   where: {
-  //     [Op.or]: [
-  //       { email: { [Op.like]: email } },
-  //       { nomer_karyawan: { [Op.like]: nomer_karyawan } },
-  //       { nomer_telepon: { [Op.like]: nomer_telepon } },
-  //       { nomer_rekening: { [Op.like]: nomer_rekening } },
-  //     ],
-  //   },
-  // });
+  const checkDuplicate = await Karyawan.findOne({
+    where: {
+      id: { [Op.ne]: karyawan_id },
+      [Op.or]: [
+        { email },
+        { nomer_karyawan },
+        { nomer_telepon },
+        { nomer_rekening },
+      ],
+    },
+  });
 
-  // if (checkDuplicate) throw new BadRequestError("Duplikasi Data!");
+  if (checkDuplicate) throw new BadRequestError("Duplikasi Data!");
 
   const result = await Karyawan.update(
     {
-      id_jabatan,
+      jabatan_id,
+      shift_id,
       full_name,
       email,
-      shift,
       nomer_karyawan,
       nomer_telepon,
       nomer_rekening,
-      avatar,
     },
-    { where: { id: id_karyawan } }
+    { where: { id: karyawan_id } }
   );
 
   return result;
@@ -121,6 +118,10 @@ const showAllKaryawan = async () => {
         model: Jabatan,
         as: "jabatan",
       },
+      {
+        model: Shift,
+        as: "shift",
+      },
     ],
   });
 
@@ -128,38 +129,38 @@ const showAllKaryawan = async () => {
 };
 
 const getKaryawan = async (req) => {
-  const { id_karyawan } = req.params;
+  const { karyawan_id } = req.params;
   const result = await Karyawan.findOne({
-    where: { id: id_karyawan },
+    where: { id: karyawan_id },
     include: [
       {
         model: Jabatan,
         as: "jabatan",
       },
       {
-        model: Avatar,
-        as: "avatar",
+        model: Shift,
+        as: "shift",
       },
     ],
   });
 
   if (!result) {
-    throw new BadRequestError(`Tidak ada karyawan dengan id: ${id_karyawan}`);
+    throw new BadRequestError(`Tidak ada karyawan dengan id: ${karyawan_id}`);
   }
 
   return result;
 };
 
 const destroyKaryawan = async (req) => {
-  const { id_karyawan } = req.params;
+  const { karyawan_id } = req.params;
 
-  const karyawanExist = await Karyawan.findOne({ where: { id: id_karyawan } });
+  const karyawanExist = await Karyawan.findOne({ where: { id: karyawan_id } });
 
   if (!karyawanExist) {
-    throw new BadRequestError(`Tidak ada karyawan dengan id: ${id_karyawan}`);
+    throw new BadRequestError(`Tidak ada karyawan dengan id: ${karyawan_id}`);
   }
 
-  const result = await Karyawan.destroy({ where: { id: id_karyawan } });
+  const result = await Karyawan.destroy({ where: { id: karyawan_id } });
 
   return result;
 };
