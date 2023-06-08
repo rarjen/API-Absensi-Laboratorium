@@ -16,12 +16,11 @@ module.exports = (sequelize, DataTypes) => {
   }
   Absensi.init(
     {
-      id_karyawan: DataTypes.INTEGER,
+      karyawan_id: DataTypes.INTEGER,
       jam_masuk: DataTypes.STRING,
       jam_pulang: DataTypes.STRING,
-      tipe: DataTypes.STRING,
+      status_absensi: DataTypes.STRING,
       status: DataTypes.STRING,
-      image_url: DataTypes.STRING,
       tanggal: DataTypes.STRING,
     },
     {
