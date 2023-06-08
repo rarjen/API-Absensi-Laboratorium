@@ -1,4 +1,6 @@
-module.exports = {
-  admin: "ADMIN",
-  superAdmin: "SUPER ADMIN",
+const ROLES = {
+  ADMIN: "ADMIN",
+  SUPERADMIN: "SUPER ADMIN",
 };
+
+module.exports = { ROLES };
