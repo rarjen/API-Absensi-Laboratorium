@@ -1,74 +1,50 @@
-const { Absensi, Karyawan } = require("../models");
+const { Absensi, Karyawan, Shift } = require("../models");
 const { BadRequestError } = require("../errors");
 const { Op } = require("sequelize");
+const { STATUS_ABSENSI, STATUS } = require("../utils/enum");
 
 const postAbsen = async (req) => {
-  const {
-    karyawan_id,
-    timeDate = new Date(),
-    status_absensi,
-    status,
-  } = req.body;
+  const { karyawan_id, status_absensi } = req.body;
 
+  const timeDate = new Date();
   const shiftPagi = "07:00";
   const shiftSore = "14:00";
+  const status = "";
 
-  const getKaryawan = await Karyawan.findOne({ where: { id: karyawan_id } });
+  const getKaryawan = await Karyawan.findOne({
+    where: { id: karyawan_id },
+    include: [
+      {
+        model: Jabatan,
+        as: "jabatan",
+      },
+      {
+        model: Shift,
+        as: "shift",
+      },
+    ],
+  });
 
   if (!getKaryawan) {
     throw new BadRequestError(`Tidak ada karyawan dengan id: ${karyawan_id}`);
   }
 
-  const shiftKaryawan = getKaryawan.shift;
+  // if(getKaryawan.shift.shift ===  )
 
-  if (tipe === "Pulang") {
-    const result = await Absensi.update(
-      {
-        jam_pulang: timeDate.toLocaleTimeString(),
-        tipe,
-      },
-      { where: { karyawan_id, tanggal: timeDate.toLocaleDateString() } }
-    );
-
-    if (result <= 0) {
-      throw new BadRequestError("Anda belum absen datang hari ini!");
-    }
-
-    return result;
-  }
-
-  if (shiftKaryawan === "Pagi" && timeDate.toLocaleTimeString() <= shiftPagi) {
-    status = "Tepat";
-  } else if (
-    shiftKaryawan === "Sore" &&
-    timeDate.toLocaleTimeString() <= shiftSore
-  ) {
-    status = "Tepat";
-  } else {
-    status = "Telat";
-  }
+  // const shiftKaryawan = getKaryawan.shift;
 
   const checkAbsen = await Absensi.findOne({
     where: {
       karyawan_id,
-      jam_pulang: "-",
+      jam_pulang: null,
       tanggal: timeDate.toLocaleDateString(),
     },
   });
-
   if (checkAbsen) {
-    throw new BadRequestError("Anda sudah absen hari ini!");
+    throw new BadRequestError("Anda sudah absen datang!");
   }
 
-  const result = await Absensi.create({
-    karyawan_id,
-    jam_masuk: timeDate.toLocaleTimeString(),
-    jam_pulang: "-",
-    tipe,
-    status,
-    image_url,
-    tanggal: timeDate.toLocaleDateString(),
-  });
+  const result = await Absensi.create({});
 
   return result;
 };
