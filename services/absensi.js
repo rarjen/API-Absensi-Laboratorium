@@ -77,6 +77,13 @@ const postAbsenPulang = async (req) => {
     throw new NotFoundError("Absensi tidak ada!");
   }
 
+  if (
+    checkAbsen.jam_pulang &&
+    checkAbsen.status_absensi === STATUS_ABSENSI.PULANG
+  ) {
+    throw new BadRequestError("Anda sudah absen pulang hari ini!");
+  }
+
   const result = await Absensi.update(
     {
       status_absensi: STATUS_ABSENSI.PULANG,
