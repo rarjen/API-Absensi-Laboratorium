@@ -1,5 +1,4 @@
-const { User } = require("../models");
-const { admin } = require("../utils/enum");
+const { Admin, Role } = require("../models");
 const { BadRequestError } = require("../errors");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
@@ -8,7 +7,7 @@ const v = new Validator();
 const { JWT_SECRET_KEY } = process.env;
 
 const register = async (req) => {
-  const { email, password, confirmPassword, role } = req.body;
+  const { email, password, confirmPassword, role_id } = req.body;
   const schema = {
     email: { type: "email", label: "Email Address" },
     password: { type: "string", min: 6 },
@@ -30,7 +29,7 @@ const register = async (req) => {
     throw new BadRequestError(`Password doesn't match`);
   }
 
-  const userExist = await User.findOne({ where: { email } });
+  const userExist = await Admin.findOne({ where: { email } });
 
   if (userExist) {
     throw new BadRequestError("User sudah terdaftar");
@@ -38,10 +37,10 @@ const register = async (req) => {
 
   const passwordHashed = await bcrypt.hash(password, 10);
 
-  const result = await User.create({
+  const result = await Admin.create({
     email,
     password: passwordHashed,
-    role: admin,
+    role_id,
   });
 
   return result;
@@ -61,7 +60,10 @@ const login = async (req) => {
     throw new BadRequestError("Email tidak valid");
   }
 
-  const user = await User.findOne({ where: { email } });
+  const user = await Admin.findOne({
+    where: { email },
+    include: [{ model: Role, as: "role" }],
+  });
 
   if (!user) {
     throw new BadRequestError("Email atau password salah");
@@ -76,7 +78,7 @@ const login = async (req) => {
   const payload = {
     id: user.id,
     email: user.email,
-    role: user.role,
+    role: user.role.role,
   };
 
   const token = jwt.sign(payload, JWT_SECRET_KEY);
