@@ -1,7 +1,7 @@
-const { Absensi, Karyawan, Shift } = require("../models");
-const { BadRequestError } = require("../errors");
+const { Absensi, Karyawan, Shift, Jabatan } = require("../models");
+const { BadRequestError, NotFoundError } = require("../errors");
 const { Op } = require("sequelize");
-const { STATUS_ABSENSI, STATUS } = require("../utils/enum");
+const { STATUS_ABSENSI, STATUS, SHIFT } = require("../utils/enum");
 
 const postAbsen = async (req) => {
   const { karyawan_id, status_absensi } = req.body;
@@ -9,7 +9,7 @@ const postAbsen = async (req) => {
   const timeDate = new Date();
   const shiftPagi = "07:00";
   const shiftSore = "14:00";
-  const status = "";
+  let status = "";
 
   const getKaryawan = await Karyawan.findOne({
     where: { id: karyawan_id },
@@ -26,12 +26,22 @@ const postAbsen = async (req) => {
   });
 
   if (!getKaryawan) {
-    throw new BadRequestError(`Tidak ada karyawan dengan id: ${karyawan_id}`);
+    throw new BadRequestError("Karyawan tidak ada!");
   }
 
-  // if(getKaryawan.shift.shift ===  )
-
-  // const shiftKaryawan = getKaryawan.shift;
+  if (
+    getKaryawan.shift.shift === SHIFT.PAGI &&
+    timeDate.toLocaleTimeString() <= shiftPagi
+  ) {
+    status = STATUS.TEPAT;
+  } else if (
+    getKaryawan.shift.shift === SHIFT.SORE &&
+    timeDate.toLocaleTimeString() <= shiftSore
+  ) {
+    status = STATUS.TEPAT;
+  } else {
+    status = STATUS.TELAT;
+  }
 
   const checkAbsen = await Absensi.findOne({
     where: {
@@ -44,7 +54,58 @@ const postAbsen = async (req) => {
     throw new BadRequestError("Anda sudah absen datang!");
   }
 
-  const result = await Absensi.create({});
+  const result = await Absensi.create({
+    karyawan_id,
+    jam_masuk: timeDate.toLocaleTimeString(),
+    status_absensi,
+    tanggal: timeDate.toLocaleDateString(),
+    status,
+  });
+
+  return result;
+};
+
+const postAbsenPulang = async (req) => {
+  const { absen_id } = req.params;
+  const timeDate = new Date();
+
+  const checkAbsen = await Absensi.findOne({
+    where: { id: absen_id, tanggal: timeDate.toLocaleDateString() },
+  });
+
+  if (!checkAbsen) {
+    throw new NotFoundError("Absensi tidak ada!");
+  }
+
+  const result = await Absensi.update(
+    {
+      status_absensi: STATUS_ABSENSI.PULANG,
+      jam_pulang: timeDate.toLocaleTimeString(),
+    },
+    { where: { id: absen_id } }
+  );
+
+  return result;
+};
+
+const todayAbsen = async (req) => {
+  const timeDate = new Date();
+
+  const result = await Absensi.findAll({
+    where: { tanggal: timeDate.toLocaleDateString() },
+    include: [
+      {
+        model: Karyawan,
+        as: "karyawan",
+        include: [
+          {
+            model: Shift,
+            as: "shift",
+          },
+        ],
+      },
+    ],
+  });
 
   return result;
 };
@@ -52,23 +113,36 @@ const postAbsen = async (req) => {
 const getAbsensi = async (req) => {
   const { startDate, endDate } = req.query;
 
+  let where = {};
+
   if (startDate && endDate) {
-    const result = await Absensi.findAll({
-      where: {
-        createdAt: {
-          [Op.between]: [
-            new Date(startDate).setHours(0, 0, 0),
-            new Date(endDate).setHours(23, 59, 59),
-          ],
-        },
+    where = {
+      createdAt: {
+        [Op.between]: [
+          new Date(startDate).setHours(0, 0, 0),
+          new Date(endDate).setHours(23, 59, 59),
+        ],
       },
-    });
-    return result;
+    };
   }
 
-  const result = await Absensi.findAll({});
+  const result = await Absensi.findAll({
+    where,
+    include: [
+      {
+        model: Karyawan,
+        as: "karyawan",
+        include: [
+          {
+            model: Shift,
+            as: "shift",
+          },
+        ],
+      },
+    ],
+  });
 
   return result;
 };
 
-module.exports = { postAbsen, getAbsensi };
+module.exports = { postAbsen, getAbsensi, todayAbsen, postAbsenPulang };
