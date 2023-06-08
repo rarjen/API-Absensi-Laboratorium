@@ -3,4 +3,19 @@ const ROLES = {
   SUPERADMIN: "SUPER ADMIN",
 };
 
-module.exports = { ROLES };
+const STATUS_ABSENSI = {
+  DATANG: "DATANG",
+  PULANG: "PULANG",
+};
+
+const STATUS = {
+  TELAT: "TELAT",
+  TEPAT: "TEPAT",
+};
+
+const SHIFT = {
+  PAGI: "PAGI",
+  SORE: "SORE",
+};
+
+module.exports = { ROLES, STATUS_ABSENSI, STATUS, SHIFT };
