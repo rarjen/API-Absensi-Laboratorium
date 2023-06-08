@@ -1,12 +1,12 @@
 const router = require("express").Router();
 const authorize = require("../middlewares/authorize");
-const role = require("../utils/enum");
+const { ROLES } = require("../utils/enum");
 const karyawan = require("../controllers/karyawan");
 
-router.get("/", authorize(role.admin), karyawan.index);
-router.get("/:karyawan_id", authorize(role.admin), karyawan.show);
-router.post("/create", authorize(role.admin), karyawan.create);
-router.put("/edit/:karyawan_id", authorize(role.admin), karyawan.update);
-router.delete("/delete/:karyawan_id", authorize(role.admin), karyawan.destroy);
+router.get("/", authorize(), karyawan.index);
+router.get("/:karyawan_id", authorize(), karyawan.show);
+router.post("/create", authorize(ROLES.ADMIN), karyawan.create);
+router.put("/edit/:karyawan_id", authorize(ROLES.ADMIN), karyawan.update);
+router.delete("/delete/:karyawan_id", authorize(ROLES.ADMIN), karyawan.destroy);
 
 module.exports = router;
