@@ -1,6 +1,6 @@
 const { Karyawan, Jabatan, Shift } = require("../models");
 const Validator = require("fastest-validator");
-const { BadRequestError } = require("../errors");
+const { BadRequestError, NotFoundError } = require("../errors");
 const { Op } = require("sequelize");
 const v = new Validator();
 
@@ -25,6 +25,16 @@ const createKaryawan = async (req) => {
   });
 
   if (validate.length > 0) throw new BadRequestError("Email tidak valid");
+
+  const checkShift = await Shift.findOne({ where: { id: shift_id } });
+  if (!checkShift) {
+    throw new NotFoundError("Tidak ada shift!");
+  }
+
+  const checkJabatan = await Jabatan.findOne({ where: { id: jabatan_id } });
+  if (!checkJabatan) {
+    throw new NotFoundError("Tidak ada jabatan!");
+  }
 
   const userExist = await Karyawan.findOne({
     where: {
