@@ -9,7 +9,7 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER,
       },
-      id_karyawan: {
+      karyawan_id: {
         type: Sequelize.INTEGER,
       },
       jam_masuk: {
@@ -18,13 +18,10 @@ module.exports = {
       jam_pulang: {
         type: Sequelize.STRING,
       },
-      tipe: {
+      status_absensi: {
         type: Sequelize.STRING,
       },
       status: {
-        type: Sequelize.STRING,
-      },
-      image_url: {
         type: Sequelize.STRING,
       },
       tanggal: {
