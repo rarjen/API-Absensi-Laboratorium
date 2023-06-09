@@ -123,6 +123,7 @@ const editKaryawan = async (req) => {
 
 const showAllKaryawan = async () => {
   const result = await Karyawan.findAll({
+    raw: true,
     include: [
       {
         model: Jabatan,
