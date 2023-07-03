@@ -6,6 +6,10 @@ const { STATUS_ABSENSI, STATUS, SHIFT } = require("../utils/enum");
 const postAbsen = async (req) => {
   const { karyawan_id, status_absensi } = req.body;
 
+  if (!karyawan_id || !status_absensi) {
+    throw new BadRequestError("Harap isi field!");
+  }
+
   const timeDate = new Date();
   const shiftPagi = "07:00";
   const shiftSore = "14:00";
@@ -99,7 +103,7 @@ const todayAbsen = async (req) => {
   const timeDate = new Date();
 
   const result = await Absensi.findAll({
-    where: { tanggal: timeDate.toLocaleDateString() },
+    where: { tanggal: timeDate.toLocaleDateString(), jam_pulang: null },
     include: [
       {
         model: Karyawan,
@@ -147,9 +151,44 @@ const getAbsensi = async (req) => {
         ],
       },
     ],
+    order: [["createdAt", "DESC"]],
+    raw: true,
   });
 
   return result;
 };
 
-module.exports = { postAbsen, getAbsensi, todayAbsen, postAbsenPulang };
+const showAbsensi = async (req) => {
+  const { absen_id } = req.params;
+
+  const result = await Absensi.findOne({
+    where: { id: absen_id },
+    include: [
+      {
+        model: Karyawan,
+        as: "karyawan",
+        include: [
+          {
+            model: Shift,
+            as: "shift",
+          },
+        ],
+      },
+    ],
+    raw: true,
+  });
+
+  if (!result) {
+    throw new NotFoundError("Absensi tidak ada!");
+  }
+
+  return result;
+};
+
+module.exports = {
+  postAbsen,
+  getAbsensi,
+  todayAbsen,
+  postAbsenPulang,
+  showAbsensi,
+};
