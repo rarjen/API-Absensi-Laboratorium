@@ -3,6 +3,7 @@ const {
   getAbsensi,
   todayAbsen,
   postAbsenPulang,
+  showAbsensi,
 } = require("../../services/absensi");
 const { StatusCodes } = require("http-status-codes");
 
@@ -19,6 +20,7 @@ const absen = async (req, res, next) => {
     next(error);
   }
 };
+
 const absenPulang = async (req, res, next) => {
   try {
     const result = await postAbsenPulang(req);
@@ -61,4 +63,18 @@ const showNow = async (req, res, next) => {
   }
 };
 
-module.exports = { absen, show, showNow, absenPulang };
+const showAbsen = async (req, res, next) => {
+  try {
+    const result = await showAbsensi(req);
+
+    return res.status(StatusCodes.OK).json({
+      status: true,
+      message: "Success show absen",
+      data: result,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+module.exports = { absen, show, showNow, absenPulang, showAbsen };
